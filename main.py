@@ -1,74 +1,78 @@
 #!usr/bin/python3
 # _*_ coding : utf-8 _*_
 
-from turtle import Turtle, Screen
+import Tkinter
 import numpy as np
 
+# Tkinter master object
+polyview = Tkinter.Tk()
+
+# -- Initialize essentials -- 
+wh = 720
+ww = 1200
+
+whc = 720/2
+wwc = 1200/2
+cvn = Tkinter.Canvas(polyview, bg='white', height=wh, width=ww)
+# -------------------------
 
 
-class turtle2DPolygon(Turtle):
+class Triangle2d():
 
-    def __init__(self, name, array2d, color):
-        super(turtle2DPolygon, self).__init__()
+	def __init__(self, offsetx=0, offsety=0, color='black', scale=0):
 
-        self.vertices = array2d
-        self.name = name
-        self.ht()
-        self.penup()
-        self.speed(0)
+		self.origo = [wwc + offsetx, whc + offsety]
 
-        self.color = color
-        self.pencolor = color
-        self.fillcolor = color
+		self.vert1 = [self.origo[0]-100, self.origo[1]]
+		self.vert2 = [self.origo[0]+100, self.origo[1]]
+		self.vert3 = [self.origo[0], self.origo[1]-100]
 
-        self.write(self.name)
-        self.draw(self.vertices)
+		self.updateverts()
 
-    def draw(self, vertices):
-        # General draw function. It is incredibly important to get the speed of this draw function up..
-        self.goto(vertices[0])
-        self.pendown()
-        self.begin_fill()
+		self.color = color
+		self.scale = scale
 
-        self.goto(vertices[1])
-        self.goto(vertices[2])
-        self.goto(vertices[0])
-
-        self.end_fill()
-        self.penup()
-
-# -- Init screen -- 
-
-scr = Screen()
-scr.delay(0)
-
-# -- Init tut --
-
-poly1 = turtle2DPolygon('1', np.array([[0,0], [0,100],[100,0]]),'black')
-poly2 = turtle2DPolygon('2', np.array([[-100,0],[-100, 100],[0,0]]), 'red')
+		self.createpoly()
 
 
-def scale2d(vertices):
+	def createpoly(self):
+		self.name = cvn.create_polygon(self.vertices, fill=self.color)
+		return 0
 
-    scaleUp = np.array([[0,0],[0,50], [0,0]])
-    
-    scaledVertices = vertices + scaleUp
-    return scaledVertices
+	def updateverts(self):
+		self.vertices = [self.vert1[0], self.vert1[1],
+						 self.vert2[0], self.vert2[1],
+						 self.vert3[0], self.vert3[1]]
+		print('New Position: ' + str(self.vertices))
 
-def translate2d(vertices):
-    return 0
+	def updatepos(self, one=[0,0], two=[0,0], three=[0,0]):
 
-def rotate2d(vertices):
-    return 0
+		self.vert1 = [sum(x) for x in zip(self.vert1, one)]
+		self.vert2 = [sum(x) for x in zip(self.vert2, two)]
+		self.vert3 = [sum(x) for x in zip(self.vert3, three)]
 
-def scale3d():
-    return 0
+		self.updateverts()
 
-def translate3d():
-    return 0
+		cvn.delete(self.name)
+		cvn.create_polygon(self.vertices)
 
-def rotate3d():
-    return 0 
+	def translate(self):
+		return 0
 
+	def rotate(self):
+		return 0
 
-scr.mainloop()
+	def scale(self):
+		return 0
+
+# Canvas object
+
+tri1 = Triangle2d(-100,-100)
+tri2 = Triangle2d(100,100)
+tri2.updatepos([-200, 0], [-200, 0], [-200, 0])
+tri2.updatepos([-200, 0], [-200, 0], [-200, 0])
+
+# packs up the Canvas object and retains the Tkinter mainloop
+cvn.pack()
+polyview.mainloop()
+
